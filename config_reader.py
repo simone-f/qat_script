@@ -36,10 +36,20 @@ class ConfigLoader:
         """
         self.app = app
         app.SCRIPTWEBSITE = "http://wiki.openstreetmap.org/wiki/Quality_Assurance_Tools_script"
+        app.GITWEBSITE = "https://github.com/simone-f/qat_script/tree/development"
 
         #Script and tools data versions
-        app.scriptVersionUrl = "http://dl.dropboxusercontent.com/u/41550819/OSM/qat_script/latest_versions.properties"
-        app.toolsListUrl = "http://dl.dropboxusercontent.com/u/41550819/OSM/qat_script/tools/tools_list.properties"
+        #mode = "stable" | "development"
+        app.mode = "development"
+        if app.mode == "stable":
+            app.scriptVersionUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/VERSIONS.properties"
+            app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/tools/tools_list.properties"
+        elif app.mode == "development":
+            app.scriptVersionUrl = "https://raw.githubusercontent.com/simone-f/qat_script/development/VERSIONS.properties"
+            app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/development/tools_list.properties"
+        else:
+            app.scriptVersionUrl = ""
+            app.toolsListUrl = ""
 
         #Read script and tools version
         self.versionsFileName = File.separator.join([app.SCRIPTDIR,

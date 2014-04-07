@@ -31,11 +31,11 @@ class AllTools():
         toolsListFile = File.separator.join([app.SCRIPTDIR,
                                              "tools",
                                              "tools_list.properties"])
-        toolsInfo = read_tools_list(toolsListFile)
+        toolsRefs = read_tools_list(toolsListFile)
 
         #Create tools instances
         self.tools = []
-        for toolRef, toolUrl in toolsInfo:
+        for toolRef in toolsRefs:
             if toolRef != "LocalFile":
                 toolDir = File.separator.join([app.SCRIPTDIR,
                                                "tools",
@@ -55,17 +55,14 @@ class AllTools():
             print "\n Tool directory is missing:", toolDir
             return None
 
-def read_tools_list(tmpToolsListFile):
+def read_tools_list(toolsListFile):
     #Read the tools names and tools data urls
        #from the downlaoded tools list
 
     toolsInfo = []
     properties = Properties()
-    fin = FileInputStream(tmpToolsListFile)
+    fin = FileInputStream(toolsListFile)
     properties.load(fin)
     toolsRefs = properties.getProperty("tools.list").split("|")
-    for toolRef in toolsRefs:
-        jarUrl = properties.getProperty(toolRef)
-        toolsInfo.append([toolRef, jarUrl.replace("\n", "")])
     fin.close()
-    return toolsInfo"""
+    return toolsRefs

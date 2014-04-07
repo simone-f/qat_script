@@ -92,7 +92,11 @@ class UpdaterTask(SwingWorker):
             else:
                 #not using latest tools
                 print "  tools can be updated: %s -> %s" % (self.app.TOOLSVERSION,
-                                                           self.app.latestToolsVersion)
+                                                            self.app.latestToolsVersion)
+                if app.mode == "stable":
+                    infoString = self.app.strings.getString("update_tools_question")
+                else:
+                    infoString = self.app.strings.getString("dev_update_tools_question")
                 answer = JOptionPane.showConfirmDialog(Main.parent,
                     self.app.strings.getString("update_tools_question"),
                     self.app.strings.getString("updates_available"),
@@ -115,11 +119,16 @@ class UpdaterTask(SwingWorker):
                                                                     latestScriptVersion)
             messageArguments = array([self.app.SCRIPTVERSION, latestScriptVersion], String)
             formatter = MessageFormat("")
-            formatter.applyPattern(self.app.strings.getString("updates_warning"))
+            if self.app.mode == "stable":
+                formatter.applyPattern(self.app.strings.getString("updates_warning"))
+                infoBtnString = self.app.strings.getString("Visit_Wiki")
+            else:
+                formatter.applyPattern(self.app.strings.getString("dev_updates_warning"))
+                infoBtnString = self.app.strings.getString("Visit_git")
             msg = formatter.format(messageArguments)
             options = [
                 self.app.strings.getString("Do_not_check_for_updates"),
-                self.app.strings.getString("Visit_Wiki"),
+                infoBtnString,
                 self.app.strings.getString("cancel")]
             answer = JOptionPane.showOptionDialog(Main.parent,
                 msg,
@@ -133,7 +142,11 @@ class UpdaterTask(SwingWorker):
                 self.app.properties.setProperty("check_for_update", "off")
                 self.app.save_config(self)
             elif answer == 1:
-                OpenBrowser.displayUrl(self.app.SCRIPTWEBSITE)
+                if self.app.mode == "stable":
+                    url = self.app.SCRIPTWEBSITE
+                else:
+                    url = self.app.GITWEBSITE
+                OpenBrowser.displayUrl(url)
 
 
 ##### Tools updater ####################################################
@@ -229,7 +242,7 @@ class DownloaderTask(SwingWorker):
             self.super__setProgress(progress)
             return
 
-        toolsInfo = read_tools_list(self.tmpToolsListFile)
+        toolsRefs = read_tools_list(self.tmpToolsListFile)
 
         #Download tools data as jar files
         progress = 5
@@ -242,8 +255,10 @@ class DownloaderTask(SwingWorker):
             for jarFileName in File(self.jarDir).list():
                 File(File.separator.join([self.jarDir, jarFileName])).delete()
         #download new files
-        for toolRef, jarUrl in toolsInfo:
-            jarFilePath = File.separator.join([self.jarDir, "%s.jar" % toolRef])
+        for toolRef in toolsRefs:
+            jarFileName = "%s.jar" % toolRef
+            jarUrl = "%s/%s" % (self.app.toolsListUrl, jarFileName)
+            jarFilePath = File.separator.join([self.jarDir, jarFileName])
             answer = self.download_file(jarUrl, jarFilePath)
             if not answer:
                 # " I cannot download the tools file"
@@ -342,13 +357,9 @@ def read_tools_list(tmpToolsListFile):
     """Read the tools names and tools data urls
        from the downlaoded tools list
     """
-    toolsInfo = []
     properties = Properties()
     fin = FileInputStream(tmpToolsListFile)
     properties.load(fin)
     toolsRefs = properties.getProperty("tools.list").split("|")
-    for toolRef in toolsRefs:
-        jarUrl = properties.getProperty(toolRef)
-        toolsInfo.append([toolRef, jarUrl.replace("\n", "")])
     fin.close()
-    return toolsInfo
+    return toolsRefs
