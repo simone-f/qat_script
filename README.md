@@ -1,6 +1,6 @@
 Quality Assurance Tools script
 ==============================
-Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStreetMap Editor) that lets the user download OSM errors from some error detecting tools and review them one after another.
+Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStreetMap Editor) that lets the user download OSM errors from some error detecting tool and review them one after another.
 
 ![qat_script menu in JOSM](http://dl.dropboxusercontent.com/u/41550819/OSM/qat_script/wiki_img/qat_script_menu_small.png "qat_script menu in JOSM")
 
