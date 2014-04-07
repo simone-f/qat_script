@@ -93,12 +93,12 @@ class UpdaterTask(SwingWorker):
                 #not using latest tools
                 print "  tools can be updated: %s -> %s" % (self.app.TOOLSVERSION,
                                                             self.app.latestToolsVersion)
-                if app.mode == "stable":
+                if self.app.mode == "stable":
                     infoString = self.app.strings.getString("update_tools_question")
                 else:
                     infoString = self.app.strings.getString("dev_update_tools_question")
                 answer = JOptionPane.showConfirmDialog(Main.parent,
-                    self.app.strings.getString("update_tools_question"),
+                    infoString,
                     self.app.strings.getString("updates_available"),
                     JOptionPane.YES_NO_OPTION)
                 if answer == 0:
