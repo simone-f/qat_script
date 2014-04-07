@@ -80,6 +80,9 @@ class Tool():
         if self.name in app.toolsPrefs:
             self.update_preferences()
 
+        if not hasattr(self, "markerPosition"):
+            self.markerPosition = None
+
         self.views = []
         for viewName, checksList in self.toolInfo.iteritems():
             self.views.append(View(app, self, viewName, checksList))

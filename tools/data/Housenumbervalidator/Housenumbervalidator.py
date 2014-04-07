@@ -32,6 +32,13 @@ class HousenumbervalidatorTool(Tool):
         self.prefsGui = None
         #There are additional preferences for this tool. See Osmose for example
 
+        #Marker position
+        self.markerPosition = None
+        #x: x position of marker relative to the error
+        #y: y position of marker relative to the error
+        #None: the marker's center will be positioned at the error coordinates
+        #      useful for markers with the shape of a circle or a square
+
         #Corrected errors
         self.fixedFeedbackMode = "url"
         #"url": the user can automatically report to the tool admin that an error has been corrected

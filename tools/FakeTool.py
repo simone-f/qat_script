@@ -34,15 +34,22 @@ class NameofthetoolTool(Tool):
         self.prefsGui = None | Java Component
         #There are additional preferences for this tool. See Osmose for example
 
+        #Marker position
+        self.markerPosition = (x, y) | None
+        #x: x position of marker relative to the error
+        #y: y position of marker relative to the error
+        #None: the marker's center will be positioned at the error coordinates
+        #      useful for markers with the shape of a circle or a square
+
         #Corrected errors
         self.fixedFeedbackMode = "url" | None
-        #url: the user can automatically report to the tool admin that an error has been corrected
+        #"url": the user can automatically report to the tool admin that an error has been corrected
         #(by clicking correctedBtn --> self.sayBugFixed())
         #None: the user cannot automatically report to the tool admin when an error has been corrected:
 
         #False positives
         self.falseFeedbackMode = "url" | "msg"
-        #url: the user can automatically report to the tool admin that an error is not an error
+        #"url": the user can automatically report to the tool admin that an error is not an error
         #(by clicking fixeddBtn --> self.sayFalseBug())
         #msg: the user can report manually, e.g. by e-mail, to the tool admin that an error is not an error:
         #In this case, when the user clicks on the "Not an error" button, current error information

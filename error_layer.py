@@ -62,11 +62,14 @@ class ErrorLayer(GpxLayer, MouseListener):
                            10,
                            10)
             else:
-                width = self.marker.getIconWidth()
-                height = self.marker.getIconHeight()
+                if self.tool.markerPosition is not None:
+                    (x, y) =  self.tool.markerPosition
+                else:
+                    x = - (self.marker.getIconWidth() / 2)
+                    y = - (self.marker.getIconHeight() / 2)
                 g.drawImage(self.marker.getImage(),
-                            pnt.x - (width / 2),
-                            pnt.y - height - 1,
+                            pnt.x + x,
+                            pnt.y + y,
                             mv)
 
     def getIcon(self):

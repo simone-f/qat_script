@@ -31,6 +31,13 @@ class OSMItaliaGrpTool(Tool):
         #Additional preferences for this tool
         self.prefsGui = None
 
+        #Marker position
+        self.markerPosition = (- 8, - 37)
+        #x: x position of marker relative to the error
+        #y: y position of marker relative to the error
+        #None: the marker's center will be positioned at the error coordinates
+        #      useful for markers with the shape of a circle or a square
+
         #Tool checks
         #{view: [title, name, url, icon, marker], ...}
         self.toolInfo = {
