@@ -33,14 +33,14 @@ class HousenumbervalidatorTool(Tool):
         #There are additional preferences for this tool. See Osmose for example
 
         #Corrected errors
-        self.fixedFeedbackMode = None
-        #url: the user can automatically report to the tool admin that an error has been corrected
+        self.fixedFeedbackMode = "url"
+        #"url": the user can automatically report to the tool admin that an error has been corrected
         #(by clicking correctedBtn --> self.sayBugFixed())
         #None: the user cannot automatically report to the tool admin when an error has been corrected:
 
         #False positives
-        self.falseFeedbackMode = "msg"
-        #url: the user can automatically report to the tool admin that an error is not an error
+        self.falseFeedbackMode = "url"
+        #"url": the user can automatically report to the tool admin that an error is not an error
         #(by clicking fixeddBtn --> self.sayFalseBug())
         #msg: the user can report manually, e.g. by e-mail, to the tool admin that an error is not an error:
         #In this case, when the user clicks on the "Not an error" button, the current error information
@@ -56,7 +56,7 @@ class HousenumbervalidatorTool(Tool):
             "Duplicates": [
                            ["Dupes (very close)", "10", "0", "pin_pink", "pin_pink"],
                            ["Dupes (exact)", "11", "1", "pin_red", "pin_red"],
-                           ["Incomplete", "12", "2", "pin_blue", "pin_blue"]
+                           ["Dupes (similar)", "12", "2", "pin_blue", "pin_blue"]
                           ],
             "Problematic": [
                             ["Broken (easy)", "20", "0", "pin_circle_red", "pin_circle_red"],
