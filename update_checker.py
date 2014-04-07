@@ -93,21 +93,11 @@ class UpdaterTask(SwingWorker):
                 #not using latest tools
                 print "  tools can be updated: %s -> %s" % (self.app.TOOLSVERSION,
                                                            self.app.latestToolsVersion)
-                options = [
-                    self.app.strings.getString("cancel"),
-                    self.app.strings.getString("Visit_Wiki"),
-                    self.app.strings.getString("OK")]
-                answer = JOptionPane.showOptionDialog(Main.parent,
+                answer = JOptionPane.showConfirmDialog(Main.parent,
                     self.app.strings.getString("update_tools_question"),
                     self.app.strings.getString("updates_available"),
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    None,
-                    options,
-                    options[1])
-                if answer == 1:
-                    OpenBrowser.displayUrl(self.app.SCRIPTWEBSITE)
-                elif answer == 2:
+                    JOptionPane.YES_NO_OPTION)
+                if answer == 0:
                     #Download the updated tools data
                     print "\n- Update tools data"
                     try:
