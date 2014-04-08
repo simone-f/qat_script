@@ -266,8 +266,7 @@ class App(PropertyChangeListener):
             self.dlg.change_selection(source)
         else:
             #get selected tool
-            toolIndex = self.dlg.toolsCombo.selectedIndex
-            self.selectedTool = self.tools[toolIndex]
+            self.selectedTool = self.dlg.toolsComboModel.getSelectedItem()
             #get selected view
             if source in ("toolsCombo", "viewsCombo"):
                 if source == "toolsCombo":

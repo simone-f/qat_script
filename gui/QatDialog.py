@@ -24,7 +24,8 @@
 from javax.swing import JPanel, ImageIcon, JButton, JLabel, JComboBox,\
                         JTable, JTextField, DefaultComboBoxModel,\
                         JScrollPane, JTabbedPane, BorderFactory,\
-                        ListSelectionModel, JPopupMenu, JMenuItem
+                        ListSelectionModel, JPopupMenu, JMenuItem,\
+                        ListCellRenderer
 from java.awt import BorderLayout, GridLayout, Color
 from java.awt.event import ActionListener, MouseAdapter, MouseEvent
 from javax.swing.table import DefaultTableModel, DefaultTableCellRenderer
@@ -73,6 +74,23 @@ class ToolsComboListener(ActionListener):
     def actionPerformed(self, event):
         if not self.app.selectionChangedFromMenuOrLayer:
             self.app.on_selection_changed("toolsCombo")
+
+
+class ToolsComboRenderer(JLabel, ListCellRenderer):
+    def __init__(self, app):
+        self.app = app
+        self.setOpaque(True)
+
+    def getListCellRendererComponent(self, list, tool, index, isSelected, cellHasFocus):
+        if isSelected:
+            self.setBackground(list.getSelectionBackground())
+            self.setForeground(list.getSelectionForeground())
+        else:
+            self.setBackground(list.getBackground())
+            self.setForeground(list.getForeground())
+        self.setIcon(tool.smallIcon)
+        self.setText(tool.title)
+        return self
 
 
 class ViewsComboListener(ActionListener):
@@ -225,7 +243,9 @@ class QatDialog(ToggleDialog):
             self.add_data_to_models(tool)
         self.toolsCombo = JComboBox(self.toolsComboModel,
                                     actionListener=ToolsComboListener(app))
+        self.toolsCombo.setRenderer(ToolsComboRenderer(self.app))
         self.toolsCombo.setToolTipText(app.strings.getString("Select_a_quality_assurance_tool"))
+
         #ComboBox with categories names ("views"), of the selected tool
         self.viewsCombo = JComboBox(actionListener=ViewsComboListener(app))
         self.viewsCombo.setToolTipText(app.strings.getString("Select_a_category_of_error"))
@@ -388,7 +408,7 @@ class QatDialog(ToggleDialog):
         """Add data of a tool to the models of the dialog components
         """
         #tools combobox model
-        self.toolsComboModel.addElement(tool.title)
+        self.toolsComboModel.addElement(tool)
 
         #views combobox
         tool.viewsComboModel = DefaultComboBoxModel()
