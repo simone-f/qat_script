@@ -44,12 +44,15 @@ class ConfigLoader:
         if app.mode == "stable":
             app.scriptVersionUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/VERSIONS.properties"
             app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/tools/tools_list.properties"
+            app.jarBaseUrl = "https://github.com/simone-f/qat_script/raw/master/tools/jar"
         elif app.mode == "development":
             app.scriptVersionUrl = "https://raw.githubusercontent.com/simone-f/qat_script/development/VERSIONS.properties"
-            app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/development/tools_list.properties"
+            app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/development/tools/tools_list.properties"
+            app.jarBaseUrl = "https://github.com/simone-f/qat_script/raw/development/tools/jar"
         else:
             app.scriptVersionUrl = ""
             app.toolsListUrl = ""
+            app.jarBaseUrl = ""
 
         #Read script and tools version
         self.versionsFileName = File.separator.join([app.SCRIPTDIR,

@@ -257,7 +257,7 @@ class DownloaderTask(SwingWorker):
         #download new files
         for toolRef in toolsRefs:
             jarFileName = "%s.jar" % toolRef
-            jarUrl = "%s/%s" % (self.app.toolsListUrl, jarFileName)
+            jarUrl = "%s/%s" % (self.app.jarBaseUrl, jarFileName)
             jarFilePath = File.separator.join([self.jarDir, jarFileName])
             answer = self.download_file(jarUrl, jarFilePath)
             if not answer:
