@@ -25,8 +25,8 @@ from javax.swing import JPanel, ImageIcon, JButton, JLabel, JComboBox,\
                         JTable, JTextField, DefaultComboBoxModel,\
                         JScrollPane, JTabbedPane, BorderFactory,\
                         ListSelectionModel, JPopupMenu, JMenuItem,\
-                        ListCellRenderer
-from java.awt import BorderLayout, GridLayout, Color
+                        ListCellRenderer, JSeparator
+from java.awt import BorderLayout, GridLayout, Color, Dimension
 from java.awt.event import ActionListener, MouseAdapter, MouseEvent
 from javax.swing.table import DefaultTableModel, DefaultTableCellRenderer
 from javax.swing.event import ListSelectionListener
@@ -82,6 +82,8 @@ class ToolsComboRenderer(JLabel, ListCellRenderer):
         self.setOpaque(True)
 
     def getListCellRendererComponent(self, list, tool, index, isSelected, cellHasFocus):
+        if isinstance(tool, JSeparator):
+            return JSeparator()
         if isSelected:
             self.setBackground(list.getSelectionBackground())
             self.setForeground(list.getSelectionForeground())
@@ -163,7 +165,7 @@ class PopupActionListener(ActionListener):
         self.app = app
 
     def actionPerformed(self, event):
-        """Click ont the checksTable popup
+        """Click on the checksTable popup
         """
         check = self.app.selectedChecks[0]
         source = event.getSource()
@@ -243,7 +245,9 @@ class QatDialog(ToggleDialog):
             self.add_data_to_models(tool)
         self.toolsCombo = JComboBox(self.toolsComboModel,
                                     actionListener=ToolsComboListener(app))
-        self.toolsCombo.setRenderer(ToolsComboRenderer(self.app))
+        renderer = ToolsComboRenderer(self.app)
+        renderer.setPreferredSize(Dimension(20, 20))
+        self.toolsCombo.setRenderer(renderer)
         self.toolsCombo.setToolTipText(app.strings.getString("Select_a_quality_assurance_tool"))
 
         #ComboBox with categories names ("views"), of the selected tool
@@ -408,9 +412,11 @@ class QatDialog(ToggleDialog):
         """Add data of a tool to the models of the dialog components
         """
         #tools combobox model
+        if tool == self.app.favouritesTool:
+            self.toolsComboModel.addElement(JSeparator())
         self.toolsComboModel.addElement(tool)
 
-        #views combobox
+        #views combobox model
         tool.viewsComboModel = DefaultComboBoxModel()
         for view in tool.views:
             tool.viewsComboModel.addElement(view.title)
@@ -463,9 +469,9 @@ class QatDialog(ToggleDialog):
         """
         if source in ("menu", "layer", "add favourite"):
             self.app.selectionChangedFromMenuOrLayer = True
-            self.toolsCombo.setSelectedItem(self.app.selectedTool.title)
+            self.toolsCombo.setSelectedItem(self.app.selectedTool)
             self.viewsCombo.setModel(self.app.selectedTool.viewsComboModel)
-            self.viewsCombo.setSelectedItem(self.app.selectedView.name)
+            self.viewsCombo.setSelectedItem(self.app.selectedView.title)
 
             self.checksTable.setModel(self.app.selectedTableModel)
             self.refresh_checksTable_columns_geometries()
