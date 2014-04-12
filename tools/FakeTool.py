@@ -13,7 +13,7 @@ from ...tool import Tool
 # webpage  : website of the tool
 
 
-class NameofthetoolTool(Tool):
+class FakeToolTool(Tool):
     def __init__(self, app):
         self.app = app
 
