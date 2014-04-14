@@ -1,4 +1,4 @@
-v0.6alpha1
+v0.6alpha2
 ==========
 New features:
 
@@ -8,10 +8,11 @@ New features:
 * An **information dialog** can be opened while fixing an error (request from Poppei82).<br>Current error information can be copied and sent to the last user who touched the OSM object affected by the error and possibly made it.
 * A **local GPX file with errors** can be opened from QA Tools menu. Anyone finding erros while processing OSM data can create GPX files with a waypoint for each error and give it to local mappers to check them in sequence, like with the regular  tools. ''desc'' tag content is shown in QATs dialog while ''osmid'' is used to select an object. Example:
 
+
 '''xml
-  <desc>Here there is a self intersecting geometry</desc>
+<desc>Here there is a self intersecting geometry</desc>
 <extensions>
-<ogr:osmid>w12345567</ogr:osmid>
+    <ogr:osmid>w12345567</ogr:osmid>
 </extensions>
 '''
 
@@ -30,6 +31,7 @@ Fixes and cleanup:
 * GUIs for downloading errors and fixing them in sequence are separated in two tabs, to give more space to checks table and error description.
 * (Reported by Poppei82) "The configuration dialogue isn't visible in the window panel". Preferences are now displayed on a JFrame, modalities of dialogs should still be improved though.
 * (Reported by Хмурый) Some boundaries with spaces in names cannot be downoloaded from overpass to use them as favourite zone.
+* (Reported by Хмурый, fixed by Akks) Encoding problems on errors descriptions.
 * Default JOSM icons are used for buttons where it's possible (OK,  Cancel, Refresh...) and Java File.separator is used instead of Python os.path.join.
 * FalsePositiveDialog width is fixed.
 * New logo.
