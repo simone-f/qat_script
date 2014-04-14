@@ -40,7 +40,7 @@ from org.openstreetmap.josm import Main
 from org.openstreetmap.josm.tools import OpenBrowser, ImageProvider
 from org.openstreetmap.josm.gui.layer import OsmDataLayer
 from org.openstreetmap.josm.data.osm import DataSet
-from org.openstreetmap.josm.gui.widgets import JMultilineLabel
+from org.openstreetmap.josm.gui.widgets import JMultilineLabel, UrlLabel
 from com.vividsolutions.jts.operation.polygonize import Polygonizer
 from org.openstreetmap.josm.plugins.jts import JTSConverter
 from com.vividsolutions.jts.geom import GeometryFactory
@@ -232,7 +232,7 @@ class NewZoneDialog(JDialog, ActionListener, WindowListener):
         boundaryTagsPanel.add(JLabel("name ="))
         self.nameTagTextField = JTextField(20)
         boundaryTagsPanel.add(self.nameTagTextField)
-        boundaryTagsPanel.add(JLabel("admin_level ="))
+        boundaryTagsPanel.add(UrlLabel("http://wiki.openstreetmap.org/wiki/Key:admin_level#admin_level", "admin_level ="))
         self.adminLevelTagTextField = JTextField(20)
         self.adminLevelTagTextField.setToolTipText(self.app.strings.getString("adminLevel_tooltip"))
         boundaryTagsPanel.add(self.adminLevelTagTextField)
