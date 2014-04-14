@@ -524,7 +524,7 @@ class PreferencesFrame(JFrame, ActionListener, WindowListener, ItemListener, Hyp
             zoneData = zone.geomString
             if zone.country != "":
                 zoneData += "|" + zone.country
-            f.write(zoneData)
+            f.write(zoneData.encode("utf-8"))
             f.close()
 
         self.app.zones = self.app.tempZones

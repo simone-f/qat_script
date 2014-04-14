@@ -168,7 +168,7 @@ def load_zones(app):
         fileContent = zoneFile.read()
         if len(fileContent.split("|")) == 2:
             geomString, country = fileContent.split("|")
-            country = country.upper()
+            country = country.upper().decode("utf-8")
         else:
             geomString = fileContent
             country = ""
