@@ -3,18 +3,18 @@ v0.6alpha2
 New features:
 
 * **Favourite checks** can be picked from the checks of all the supported QA Tools (right-click on a check name). <br>They will be collected in the new "Favourites" tool, to easily find them again.
-* **Multiple favourite zones** can be created and previewed on a map inside JOSM (credit to imagery preferences).<br>They can be built from Preferences dialog or by adding text files (with WKT geometry or bbox for rectangular area) into "qat_script/configuration/favourite_zones" directory.
+* **Multiple favourite zones** can be created and previewed on a map inside JOSM (credit to imagery preferences).<br>They can be built from Preferences dialog or by adding text files (with WKT geometry or bbox for rectangular area) into `qat_script/configuration/favourite_zones` directory.
 * An **help link** is provided for each check (right click on a check name) pointing to the OSM Wiki page describing that error kind, if this does exist.
 * An **information dialog** can be opened while fixing an error (request from Poppei82).<br>Current error information can be copied and sent to the last user who touched the OSM object affected by the error and possibly made it.
-* A **local GPX file with errors** can be opened from QA Tools menu. Anyone finding erros while processing OSM data can create GPX files with a waypoint for each error and give it to local mappers to check them in sequence, like with the regular  tools. ''desc'' tag content is shown in QATs dialog while ''osmid'' is used to select an object. Example:
+* A **local GPX file with errors** can be opened from QA Tools menu. Anyone finding erros while processing OSM data can create GPX files with a waypoint for each error and give it to local mappers to check them in sequence, like with the regular  tools. `desc` tag content is shown in QATs dialog while `osmid` is used to select an object. Example:
 
 
-'''xml
+```xml
 <desc>Here there is a self intersecting geometry</desc>
 <extensions>
     <ogr:osmid>w12345567</ogr:osmid>
 </extensions>
-'''
+```
 
 * **Tools can be updated**. If new tools, checks or tools translations are supported they can be donwloaded whithout having to download all the script again.
 * Now multiple error kinds can always be selected and downloaded. If a tool does not return more than one error type per request, requests are queued.
@@ -23,19 +23,20 @@ New features:
 
 Tools:
 
-* New tool: [**housenumbervalidator**](http://gulp21.bplaced.net/osm/housenumbervalidator/), form User:Gulp21
+* New tool: [**housenumbervalidator**](http://gulp21.bplaced.net/osm/housenumbervalidator/), by User:Gulp21 (request from Poppei82)
 * False positives errors can now be reported for "OSM Italia Grp" QA tool.
 
 Fixes and cleanup:
 
 * GUIs for downloading errors and fixing them in sequence are separated in two tabs, to give more space to checks table and error description.
-* (Reported by Poppei82) "The configuration dialogue isn't visible in the window panel". Preferences are now displayed on a JFrame, modalities of dialogs should still be improved though.
+* (Reported by Poppei82) "The configuration dialogue isn't visible in the window panel". Preferences are now displayed on a JFrame.
 * (Reported by Хмурый) Some boundaries with spaces in names cannot be downoloaded from overpass to use them as favourite zone.
 * (Reported by Хмурый, fixed by Akks) Encoding problems on errors descriptions.
 * Default JOSM icons are used for buttons where it's possible (OK,  Cancel, Refresh...) and Java File.separator is used instead of Python os.path.join.
 * FalsePositiveDialog width is fixed.
 * New logo.
 * A lot of code has been refactorized by separating classes to different files.
+* German and French translations updated by Poppei82 and operon.
 
 v0.5.1
 ======

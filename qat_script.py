@@ -859,7 +859,7 @@ class App(PropertyChangeListener):
                 load_zones(self)
             #build preferences dialog
             self.preferencesFrame = PreferencesFrame(
-                Main.parent,
+                None,
                 self.strings.getString("preferences_title"),
                 #True,
                 self)
