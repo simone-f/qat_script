@@ -450,11 +450,7 @@ class PreferencesFrame(JFrame, ActionListener, WindowListener, ItemListener, Hyp
         try:
             self.newZoneDialog
         except AttributeError:
-            from java.awt import Dialog
-            self.newZoneDialog = NewZoneDialog(Main.parent,
-                                               self.app.strings.getString("Create_a_new_favourite_zone"),
-                                               Dialog.ModalityType.APPLICATION_MODAL,
-                                               self.app)
+            self.newZoneDialog = NewZoneDialog(self.app)
         bbox = self.app.get_frame_bounds()
         self.app.newZone = Zone(self.app,
                                 self.app.strings.getString("New_zone"),
@@ -463,7 +459,6 @@ class PreferencesFrame(JFrame, ActionListener, WindowListener, ItemListener, Hyp
                                 "")
         self.newZoneDialog.update_gui_from_preferences()
         self.newZoneDialog.show()
-        self.setEnabled(False)
 
 ### Exit from preferences ##############################################
     def on_cancelBtn_clicked(self, event=None):

@@ -40,7 +40,7 @@ from org.openstreetmap.josm import Main
 from org.openstreetmap.josm.tools import OpenBrowser, ImageProvider
 from org.openstreetmap.josm.gui.layer import OsmDataLayer
 from org.openstreetmap.josm.data.osm import DataSet
-from org.openstreetmap.josm.gui.widgets import JMultilineLabel, UrlLabel
+from org.openstreetmap.josm.gui.widgets import UrlLabel
 from com.vividsolutions.jts.operation.polygonize import Polygonizer
 from org.openstreetmap.josm.plugins.jts import JTSConverter
 from com.vividsolutions.jts.geom import GeometryFactory
@@ -91,8 +91,13 @@ class TextListener(DocumentListener):
 class NewZoneDialog(JDialog, ActionListener, WindowListener):
     """Dialog for favourite zone editing
     """
-    def __init__(self, parent, title, modal, app):
+    def __init__(self, app):
+        from java.awt import Dialog
         from java.awt import CardLayout
+        JDialog.__init__(self,
+                         app.preferencesFrame,
+                         app.strings.getString("Create_a_new_favourite_zone"),
+                         Dialog.ModalityType.DOCUMENT_MODAL)
         self.app = app
         border = BorderFactory.createEmptyBorder(5, 7, 7, 7)
         self.getContentPane().setBorder(border)
@@ -570,7 +575,6 @@ class NewZoneDialog(JDialog, ActionListener, WindowListener):
         #delete favourite zone editing layer if present
         self.remove_new_zone_editing_layer()
         self.dispose()
-        self.app.preferencesFrame.setEnabled(True)
         self.app.preferencesFrame.toFront()
 
 
