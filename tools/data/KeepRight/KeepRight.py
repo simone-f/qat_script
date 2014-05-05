@@ -17,7 +17,7 @@ class KeepRightTool(Tool):
         self.title = "KeepRight"
 
         #Tool url
-        self.uri = "http://keepright.ipax.at/"
+        self.uri = "http://keepright.at/"
 
         #Translations
         self.isTranslated = True
@@ -108,7 +108,11 @@ class KeepRightTool(Tool):
                         ["291", "291", "291", "290"],
                         ["292", "292", "292", "290"],
                         ["293", "293", "293", "290"],
-                        ["294", "294", "294", "290"]
+                        ["294", "294", "294", "290"],
+                        ["295", "295", "295", "290"],
+                        ["296", "296", "296", "290"],
+                        ["297", "297", "297", "290"],
+                        ["298", "298", "298", "290"]
                         ],
 
             "Roundabouts": [
