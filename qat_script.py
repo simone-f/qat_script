@@ -894,6 +894,7 @@ class GetUserOfSelectedPrimitive(Runnable):
         if osmObject is not None and osmObject.getUser() is not None and\
            osmObject.getUser() != User.getAnonymous():
             self.app.selectedError.user = osmObject.getUser()
+            self.app.selectedError.changeset = str(osmObject.getChangesetId())
 
 
 ########################################################################

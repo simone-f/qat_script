@@ -37,6 +37,7 @@ class ConfigLoader:
         self.app = app
         app.SCRIPTWEBSITE = "http://wiki.openstreetmap.org/wiki/Quality_Assurance_Tools_script"
         app.GITWEBSITE = "https://github.com/simone-f/qat_script/tree/development"
+        app.users = {}
 
         #Script and tools data versions
         #mode = "stable" | "development"

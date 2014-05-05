@@ -197,6 +197,7 @@ class Error():
         self.bbox = bbox
         self.coords = (lat, lon)
         self.user = None    # it will be filled after error download and selection
+        self.changeset = None
         self.errorId = errorId
         self.url = None    # calculated with tool.error_url(error) when error info dialog is opened
         self.desc = desc
