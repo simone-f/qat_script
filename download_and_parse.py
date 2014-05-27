@@ -35,7 +35,7 @@ from java.util import Collections
 
 #josm import
 from org.openstreetmap.josm import Main
-from org.openstreetmap.josm.tools import Utils
+from java.nio.charset import StandardCharsets
 
 #local import
 from tools.tool import Error
@@ -84,7 +84,7 @@ class DownloadTask(SwingWorker):
                 url = URL(self.app.downloadingUrl)
                 uc = url.openConnection()
                 ins = uc.getInputStream()
-                inb = BufferedReader(InputStreamReader(ins, Utils.UTF_8))
+                inb = BufferedReader(InputStreamReader(ins, StandardCharsets.UTF_8))
                 builder = StringBuilder()
                 line = inb.readLine()
                 while line is not None and not self.isCancelled():
