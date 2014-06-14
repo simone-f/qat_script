@@ -32,7 +32,7 @@ class ErrorInfoDialog(JDialog, HyperlinkListener):
        so that the user can copy its info and send a message to the user
        who possibly made the error.
     """
-    def __init__(self, parent, title, modal, app):
+    def __init__(self, app):
         #java import
         from javax.swing import JPanel, JButton, JLabel, ImageIcon,\
                                 JScrollPane, BorderFactory, WindowConstants,\
@@ -40,8 +40,13 @@ class ErrorInfoDialog(JDialog, HyperlinkListener):
         from java.awt import FlowLayout, Dimension, Component
         from java.io import File
         #josm import
+        from org.openstreetmap.josm import Main
         from org.openstreetmap.josm.tools import ImageProvider
         from org.openstreetmap.josm.gui.widgets import HtmlPanel, UrlLabel
+        JDialog.__init__(self,
+                         Main.parent,
+                         app.strings.getString("error_info_title"),
+                         True)
         self.app = app
         self.setSize(400, 480)
         border = BorderFactory.createEmptyBorder(5, 7, 5, 7)

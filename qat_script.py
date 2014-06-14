@@ -612,11 +612,7 @@ class App(PropertyChangeListener):
            The text can be copied, so to inform the user who made the error
         """
         if not hasattr(self, "errorInfoDlg"):
-            self.errorInfoDlg = ErrorInfoDialog(
-                Main.parent,
-                self.strings.getString("error_info_title"),
-                False,
-                self)
+            self.errorInfoDlg = ErrorInfoDialog(self)
         self.errorInfoDlg.update()
 
     def on_correctedBtn_clicked(self, event):
