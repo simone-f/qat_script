@@ -54,7 +54,8 @@ To add a new QA tool read the file tools/README.md.
 Note: I wrote a Python script, that can be run in JOSM thanks to [JOSM Scripting plugin](http://gubaer.github.io/josm-scripting-plugin/), rathar than a regular JOSM plugin because I just know Python. I would be happy if someone could create a Java plugin with these features.
 
 ### Contributors
-Several mappers contributed by testing, reporting bugs or suggesting new features. Their names are in CONTRIBUTORS and CHANGES files.
+Several mappers contributed by testing, reporting bugs or suggesting new features: mcheck, Poppei82, operon, Хмурый ...
+Their names are in CONTRIBUTORS and CHANGES files.
 
 ### Attributions
 * KeepRight, Geofabrik and Osmose logos have been drawn in Inkscape and are based on the official logos.
