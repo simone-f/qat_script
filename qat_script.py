@@ -550,6 +550,7 @@ class App(PropertyChangeListener):
             #Error tab
             self.dlg.activate_error_tab(True)
             self.dlg.tabbedPane.setSelectedIndex(0)
+            self.dlg.update_error_buttons("show stats")
 
         self.dlg.update_statsPanel_status()
 
