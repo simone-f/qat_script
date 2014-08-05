@@ -1,5 +1,5 @@
-v0.6alpha2
-==========
+v0.6
+====
 New features:
 
 * **Favourite checks** can be picked from the checks of all the supported QA Tools (right-click on a check name). <br>They will be collected in the new "Favourites" tool, to easily find them again.
