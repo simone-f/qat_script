@@ -42,21 +42,21 @@ class OSMItaliaGrpTool(Tool):
         #{view: [title, name, url, icon, marker], ...}
         self.toolInfo = {
             "Tagging": [
-                         ["Ref non conformi", "wrong_refs", "http://bit.ly/12u63QS", "wrong_refs"],
-                         ["Ref nel nome", "no_ref", "http://bit.ly/1bEcoIT", "no_ref"],
-                         ["Nomi non conformi", "name_via", "http://bit.ly/ZPnhW7", "name_via"],
-                         ["Spazi nel nome", "wrong_spaces_in_hgw_name", "http://bit.ly/ZPo5KC", "wrong_spaces_in_hgw_name"],
-                         ["Numeri telefonici", "phone_numbers", "http://bit.ly/18H4DpF", "phone_numbers"],
-                         ["Wikipedia no lang", "wikipedia_lang", "http://bit.ly/11N5iQX", "wikipedia_lang"]
+                         ["Ref non conformi", "wrong_refs", "https://bit.ly/17jY71V", "wrong_refs"],
+                         ["Ref nel nome", "no_ref", "https://bit.ly/10bCraW", "no_ref"],
+                         ["Nomi non conformi", "name_via", "https://bit.ly/XPMfG3", "name_via"],
+                         ["Spazi nel nome", "wrong_spaces_in_hgw_name", "https://bit.ly/YQI1xF", "wrong_spaces_in_hgw_name"],
+                         ["Numeri telefonici", "phone_numbers", "https://bit.ly/15iJoIj", "phone_numbers"],
+                         ["Wikipedia no lang", "wikipedia_lang", "https://bit.ly/11agjdJ", "wikipedia_lang"]
                          ],
             "Geometrie": [
-                         ["Nodi duplicati (Veneto)", "duplicate_build_land_barr_nodes", "http://bit.ly/1abKfep", "duplicate_build_land_barr_nodes"],
-                         ["Edifici duplicati (Veneto)", "duplicate_build_land_barrier", "http://bit.ly/16nAirI", "duplicate_build_land_barrier"],
-                         ["Nodi solitari", "lonely_nodes", "http://bit.ly/ZPmNPP", "lonely_nodes"],
-                         ["Strade duplicate", "duplicate_highways", "http://bit.ly/11N4yv6", "duplicate_highways"],
-                         ["Rotatorie sospette", "wrong_roundabout_exit_entry", "http://bit.ly/11N5yiJ", "wrong_roundabout_exit_entry"],
-                         ["Uscita rotatoria senza dir obbligata", "missing_no_turn_on_roundabout_exit", "http://bit.ly/163rzdv", "missing_no_turn_on_roundabout_exit"],
-                         ["Strade non connesse (GEOFABRIK)", "disconnected_highways", "http://bit.ly/154cwxJ", "disconnected_highways"]
+                         ["Nodi duplicati (Veneto)", "duplicate_build_land_barr_nodes", "https://bit.ly/XEHiOh", "duplicate_build_land_barr_nodes"],
+                         ["Edifici duplicati (Veneto)", "duplicate_build_land_barrier", "https://bit.ly/Z0KuEV", "duplicate_build_land_barrier"],
+                         ["Nodi solitari", "lonely_nodes", "https://bit.ly/11beU42", "lonely_nodes"],
+                         ["Strade duplicate", "duplicate_highways", "https://bit.ly/YQF7ca", "duplicate_highways"],
+                         ["Rotatorie sospette", "wrong_roundabout_exit_entry", "https://bit.ly/13hVq0g", "wrong_roundabout_exit_entry"]#,
+                         #["Uscita rotatoria senza dir obbligata", "missing_no_turn_on_roundabout_exit", "https://bit.ly/17EzZKj", "missing_no_turn_on_roundabout_exit"],
+                         #["Strade non connesse (GEOFABRIK)", "disconnected_highways", "https://bit.ly/disconnected_highways", "disconnected_highways"]
                          ]}
         #add markers
         for view, checksInfo in self.toolInfo.iteritems():
