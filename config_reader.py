@@ -41,7 +41,7 @@ class ConfigLoader:
 
         #Script and tools data versions
         #mode = "stable" | "development"
-        app.mode = "development"
+        app.mode = "stable"
         if app.mode == "stable":
             app.scriptVersionUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/VERSIONS.properties"
             app.toolsListUrl = "https://raw.githubusercontent.com/simone-f/qat_script/master/tools/tools_list.properties"
