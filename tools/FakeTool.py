@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This is a fake tool that may be used as a teplate to add a new QA Tool to QATs
+This is a fake tool that may be used as a template to add a new QA Tool to QATs.
 """
 
 from java.lang import Thread
@@ -80,9 +80,9 @@ class FakeToolTool(Tool):
     def download_urls(self, (zoneBbox, checks)):
         """This method accepts a list of checks and returns
            a list of {"checks": checks list, "url": url} for each request
-           that is needed to donwload all the checks.
+           that is needed to download all the checks.
            If the errors from all the checks can be downloaded with just
-           one url, a list with one dictionary must be returned
+           one url, a list with one dictionary must be returned.
         """
         #Example for KeepRight
         url = "http://keepright.ipax.at/export.php?format=gpx"
