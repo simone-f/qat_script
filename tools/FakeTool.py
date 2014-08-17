@@ -134,7 +134,7 @@ class FakeToolTool(Tool):
     #MANDATORY. Return "" if there isn't any web page
     def help_url(self, check):
         """Create a url to show some info/help on this check, for example
-           a webpage on the OSM Wiki about a specific check
+           a webpage on the OSM Wiki about a specific check.
         """
         #Example for Osmose: http://wiki.openstreetmap.org/wiki/Osmose/errors#1040
         url = "http://wiki.openstreetmap.org/wiki/Osmose/errors#%s" % check.name
@@ -142,7 +142,7 @@ class FakeToolTool(Tool):
 
     #MANDATORY. A method for error file parsing.
     #The error can be a GML (see: OSM Inspector, KeepRight...) or JSON (see Osmose)
-    def parse_error_file(self, parseTask    def parse_error_file(self, parseTask):
+    def parse_error_file(self, parseTask):
         """Extract errors from GPX file
         """
         checks = parseTask.checks
