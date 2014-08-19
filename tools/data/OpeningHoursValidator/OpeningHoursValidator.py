@@ -5,6 +5,7 @@
 Opening hours validate module. Addresses all tags using a opening_hours based syntax using pyopening_hours.
 See http://wiki.openstreetmap.org/wiki/Key:opening_hours:specification for the syntax specification.
 """
+import urllib
 
 from java.lang import Thread
 from ...tool import Tool
@@ -16,6 +17,10 @@ from ...tool import Tool
 
 
 class OpeningHoursValidator(Tool):
+
+    OVERPASS_API_URL = u'http://overpass-api.de/api/interpreter'
+    OVERPASS_API_TIMEOUT = 60
+
     def __init__(self, app):
         self.app = app
 
@@ -29,6 +34,11 @@ class OpeningHoursValidator(Tool):
         #Translations
         self.isTranslated = False
         #the translations for a tool are in tool directory/locale
+
+        ## Custom variables:
+
+        # Current mode of opening_hours.js: https://github.com/ypid/opening_hours.js#library-api
+        self.oh_mode = None
 
 
         #Additional preferences for this tool
@@ -62,10 +72,19 @@ class OpeningHoursValidator(Tool):
         #(like "Tagging", "Routing..."), which are used to create submenus and
         #comboboxes in JOSM.
         #{view: [title, name, url, icon, marker], ...}
+        # Names correspond to https://github.com/ypid/opening_hours.js/blob/c22baae9270dcd1625aeaf901dcb63a424f09abe/js/i18n-resources.js#L28
         self.toolInfo = {
             "opening_hours" : [
+                 ["opening_hours warnings and errors",
+                  "error",
+                  "string used by create_url() to request errors from server",
+                  ],
+                 ["opening_hours errors",
+                  "warnOnly",
+                  "string used by create_url() to request errors from server",
+                  ],
                  ["opening_hours warnings",
-                  "opening_hours warnings",
+                  "errorOnly",
                   "string used by create_url() to request errors from server",
                   ],
              ],
@@ -106,19 +125,14 @@ class OpeningHoursValidator(Tool):
     def error_url(self, error):
         """Create a url to view an error in the web browser.
         """
-        url = "http://keepright.ipax.at/report_map.php?"
-        url += "schema=%s" % error.errorId.split(" ")[0]
-        url += "&error=%s" % error.errorId.split(" ")[1]
-        return url
+        return self.uri + '?EXP='+ urllib.quote(error.oh_value) + '&mode=' +self.oh_mode
 
     #MANDATORY. Return "" if there isn't any web page
     def help_url(self, check):
         """Create a url to show some info/help on this check, for example
            a webpage on the OSM Wiki about a specific check.
         """
-        #Example for Osmose: http://wiki.openstreetmap.org/wiki/Osmose/errors#1040
-        url = "http://wiki.openstreetmap.org/wiki/Osmose/errors#%s" % check.name
-        return url
+        return self.uri
 
     #MANDATORY. A method for error file parsing.
     #The error can be a GML (see: OSM Inspector, KeepRight...) or JSON (see Osmose)
