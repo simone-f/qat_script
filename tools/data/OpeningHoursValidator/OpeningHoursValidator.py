@@ -5,20 +5,32 @@
 Opening hours validate module. Addresses all tags using a opening_hours based syntax using pyopening_hours.
 See http://wiki.openstreetmap.org/wiki/Key:opening_hours:specification for the syntax specification.
 """
+
+import sys
 import urllib
+import urllib2
+import logging
 
 from java.lang import Thread
+from java.io import File
 from ...tool import Tool
-# from osm_time.OpeningHours import OpeningHours, ParseException
+
+# import pyopening_hours
+# ImportError: No module named pyopening_hours
 
 # tool   : opening_hours_validator
 # author : Robin `ypid` Schneider
 # webpage: http://openingh.openstreetmap.de/evaluation_tool/
 
+logging.basicConfig(
+    format='%(levelname)s (OpeningHoursValidatorTool): %(message)s',
+    level=logging.DEBUG,
+    # level=logging.INFO,
+)
 
-class OpeningHoursValidator(Tool):
+class OpeningHoursValidatorTool(Tool):
 
-    OVERPASS_API_URL = u'http://overpass-api.de/api/interpreter'
+    OVERPASS_API_URL = 'http://overpass-api.de/api/interpreter'
     OVERPASS_API_TIMEOUT = 60
 
     def __init__(self, app):
@@ -38,8 +50,7 @@ class OpeningHoursValidator(Tool):
         # # Custom variables:
 
         # Current mode of opening_hours.js: https://github.com/ypid/opening_hours.js#library-api
-        self.oh_mode = None
-
+        self.oh_mode = 0
 
         # Additional preferences for this tool
         self.prefsGui = None
@@ -59,7 +70,7 @@ class OpeningHoursValidator(Tool):
         # None: the user cannot automatically report to the tool admin when an error has been corrected:
 
         # False positives
-        self.falseFeedbackMode = "https://github.com/ypid/opening_hours.js/issues"
+        self.falseFeedbackMode = "msg"
         # "url": the user can automatically report to the tool admin that an error is not an error
         # (by clicking fixeddBtn --> self.sayFalseBug())
         # msg: the user can report manually, e.g. by e-mail, to the tool admin that an error is not an error:
@@ -74,21 +85,28 @@ class OpeningHoursValidator(Tool):
         # {view: [title, name, url, icon, marker], ...}
         # Names correspond to https://github.com/ypid/opening_hours.js/blob/c22baae9270dcd1625aeaf901dcb63a424f09abe/js/i18n-resources.js#L28
         self.toolInfo = {
-            "opening_hours" : [
-                 ["opening_hours warnings and errors",
-                  "error",
-                  "string used by create_url() to request errors from server",
-                  ],
-                 ["opening_hours errors",
-                  "warnOnly",
-                  "string used by create_url() to request errors from server",
-                  ],
-                 ["opening_hours warnings",
-                  "errorOnly",
-                  "string used by create_url() to request errors from server",
-                  ],
-             ],
-         }
+            "opening_hours": [
+                [
+                    "filter_error",
+                    "filter_error",
+                    "string used by create_url() to request errors from server",
+                    "circle_err",
+                    "circle_err",
+                ], [
+                    "filter_warnOnly",
+                    "filter_warnOnly",
+                    "string used by create_url() to request errors from server",
+                    "circle_red_warn",
+                    "circle_red_warn",
+                ], [
+                    "filter_errorOnly",
+                    "filter_errorOnly",
+                    "string used by create_url() to request errors from server",
+                    "circle_err",
+                    "circle_err",
+                ],
+            ],
+        }
         Tool.__init__(self, app)
 
         # if there is not an icon for a check in 'tool directory/icons/checks/check name' a red dot is used.
@@ -101,31 +119,29 @@ class OpeningHoursValidator(Tool):
            If the errors from all the checks can be downloaded with just
            one url, a list with one dictionary must be returned.
         """
-        # Example for KeepRight
-        url = "http://keepright.ipax.at/export.php?format=gpx"
-        url += "&left=%s&right=%s&top=%s&bottom=%s" % (str(zoneBbox[0]), str(zoneBbox[2]), str(zoneBbox[3]), str(zoneBbox[1]))
-        url += "&ch=0,%s" % ",".join([check.url for check in checks])
-        return [{"checks": checks, "url": url}]
 
-    # optional: if self.fixedFeedbackMode == "url"
-    def sayBugFixed(self, error, check):
-        """Tell tool the server that the current error is fixed.
-           Not necessary if the tool does not support automatic report.
-        """
-        return True
+        check_osm_key = 'opening_hours'
 
-    # optional: if self.falseFeedbackMode == "url"
-    def sayFalseBug(self, error, check):
-        """Tell the tool server that current error is a false
-           positive. Not necessary if the tool does not support automatic report.
-        """
-        return True
+        overpass_query_url = self.OVERPASS_API_URL \
+            + '?&data=' \
+            + urllib2.quote("[out:json][timeout:%d][bbox:%f,%f,%f,%f];" % (
+                self.OVERPASS_API_TIMEOUT,
+                zoneBbox[1], zoneBbox[0],
+                zoneBbox[3], zoneBbox[2]
+            ) + "(node['%s'];way['%s'];);out body center;" % (check_osm_key, check_osm_key))
+        return [{"checks": checks, "url": overpass_query_url}]
 
     # MANDATORY. Return "" if there isn't any web page
     def error_url(self, error):
         """Create a url to view an error in the web browser.
         """
-        return self.uri + '?EXP='+ urllib.quote(error.oh_value) + '&mode=' +self.oh_mode
+        return '%s?EXP=%s&lat=%f&lon=%f&mode=%d' % (
+            self.uri,
+            urllib.quote(error.other['oh_value']),
+            error.other['lat'],
+            error.other['lon'],
+            error.other['oh_mode'],
+        )
 
     # MANDATORY. Return "" if there isn't any web page
     def help_url(self, check):
@@ -137,55 +153,73 @@ class OpeningHoursValidator(Tool):
     # MANDATORY. A method for error file parsing.
     # The error can be a GML (see: OSM Inspector, KeepRight...) or JSON (see Osmose)
     def parse_error_file(self, parseTask):
-        """Extract errors from GPX file
+        """Extract errors from JSON file. Implementation based on OsmoseTool.
         """
-        checks = parseTask.checks
-        # List of features
-        checksWithoutSubs = [int(c.name) // 10 for c in checks if c.name[-1] == "0"]
 
-        rootElement = parseTask.extractRootElement()
-        listOfFeatures = rootElement.getElementsByTagName("wpt")
-        featuresNumber = listOfFeatures.getLength()
-        # print "Total number of features: ", featuresNumber
-        for i in range(featuresNumber):
-            if Thread.currentThread().isInterrupted():
-                return False
-            featureNode = listOfFeatures.item(i)
-            # errorId
-            schemaNode = featureNode.getElementsByTagName("schema")
-            schema = str(schemaNode.item(0).getFirstChild().getNodeValue())
-            errorIdNode = featureNode.getElementsByTagName("id")
-            errorId = schema + " " + str(errorIdNode.item(0).getFirstChild().getNodeValue())
-            # desc
-            descNode = featureNode.getElementsByTagName("desc")
-            desc = descNode.item(0).getFirstChild().getNodeValue()
-            # comment
-            commentNode = featureNode.getElementsByTagName("comment")
-            if commentNode.getLength() != 0:
-                comment = commentNode.item(0).getFirstChild().getNodeValue()
-                other = [comment]
-                desc += "<br>Comment - %s" % comment
+        check_osm_key = 'opening_hours'
+
+        print parseTask
+        logging.debug("parseTask.errors: %s", parseTask.errors)
+        logging.debug("parseTask.tool: %s", parseTask.tool)
+        jysonModule = File.separator.join([parseTask.app.SCRIPTDIR, "tools", "jyson.jar"])
+        if jysonModule not in sys.path:
+            sys.path.append(jysonModule)
+        from com.xhaus.jyson import JysonCodec as json
+        overpass_json_object = json.loads(parseTask.app.errorsData)
+        for element in overpass_json_object['elements']:
+            if check_osm_key not in element['tags']:
+                logging.error('Overpass API returned element which did not contain queried tag.')
+                continue
+
+            if 'name' in element['tags']:
+                logging.debug("Tag name: %s", element['tags']['name'])
+            oh_value = element['tags'][check_osm_key]
+            lat = None
+            lon = None
+            if 'center' in element:
+                lat = float(element['center']['lat'])
+                lon = float(element['center']['lon'])
             else:
-                other = []
-            # osmObject
-            osmObjectNode = featureNode.getElementsByTagName("object_type")
-            osmObject = str(osmObjectNode.item(0).getFirstChild().getNodeValue())
-            # osmId
-            osmIdNode = featureNode.getElementsByTagName("object_id")
-            osmId = osmObject[0] + str(osmIdNode.item(0).getFirstChild().getNodeValue())
-            # errorType
-            errorTypeNode = featureNode.getElementsByTagName("error_type")
-            errorType = str(errorTypeNode.item(0).getFirstChild().getNodeValue())
-            # geo
-            lat = float(featureNode.getAttribute("lat"))
-            lon = float(featureNode.getAttribute("lon"))
+                lat = float(element['lat'])
+                lon = float(element['lon'])
+            osmId = "%s%d" % (element['type'][:1], element['id'])
             bbox = parseTask.build_bbox(lat, lon)
+            errorID = ''
 
-            # Append to errors
-            if errorType in parseTask.errors:
-                parseTask.errors[errorType].append((osmId, (lat, lon), bbox, errorId, desc, other))
-            # check if it is a subtype
-            elif int(errorType) // 10 in checksWithoutSubs:
-                et = str(int(errorType) // 10 * 10)
-                parseTask.errors[et].append((osmId, (lat, lon), bbox, errorId, desc, other))
+            oh_value = element['tags'][check_osm_key]
+            user_error_message = None
+            # try:
+            #     oh = pyopening_hours.OpeningHours(oh_value)
+            # except pyopening_hours.ParseException:
+            #     # print(error.message)
+            #     # print(self._return_tuple_for_element(element))
+            #     interesting_elements['errorOnly'].append(self._return_tuple_for_element(element))
+            #     continue
+            # if oh.getWarnings():
+            #     # for line in oh.getWarnings():
+            #         # print('  ' + line)
+            #     # print(self._return_tuple_for_element(element))
+            #     interesting_elements['warnOnly'].append(self._return_tuple_for_element(element))
+            user_error_message = "%s\n\nValue could not be parsed, reason:\n%s" % (oh_value, "error")
+
+            if 'error' in parseTask.errors:
+                parseTask.errors['error'].append(
+                    (
+                        osmId,
+                        (lat, lon),
+                        bbox,
+                        errorID,
+                        user_error_message,
+                        {
+                            'lat': lat,
+                            'lon': lon,
+                            'oh_value': oh_value,
+                            'oh_mode': self.oh_mode,
+                        },
+                    )
+                )
+
+            # if 'error' in checks:
+            # if 'errorOnly' in checks:
+            # if 'warnOnly' in checks:
         return True

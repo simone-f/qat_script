@@ -13,6 +13,3 @@ Using a local file with errors
 If you have found some errors in OSM and you want to review them in sequence with qat_script in JOSM, instead of creating a new tool you may create a GPX file with the errors as way points.
 
 See the [Wiki](http://wiki.openstreetmap.org/wiki/Quality_Assurance_Tools_script#Local_file) for more information.
-
-
-
