@@ -1,0 +1,3 @@
+[submodule "git_submodules_of_libs/pyopening_hours"]
+	path = git_submodules_of_libs/pyopening_hours
+	url = https://github.com/ypid/pyopening_hours.git

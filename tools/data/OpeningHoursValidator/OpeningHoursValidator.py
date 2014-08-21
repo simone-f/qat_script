@@ -15,7 +15,7 @@ from java.lang import Thread
 from java.io import File
 from ...tool import Tool
 
-# import pyopening_hours
+import pyopening_hours
 # ImportError: No module named pyopening_hours
 
 # tool   : opening_hours_validator
