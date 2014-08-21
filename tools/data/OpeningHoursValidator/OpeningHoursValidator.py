@@ -37,14 +37,14 @@ class OpeningHoursValidatorTool(Tool):
         self.app = app
 
         # Tool title
-        self.title = 'opening_hours_validator'
+        self.title = 'Opening Hours Validator'
 
         # Tool url
         self.uri = 'http://openingh.openstreetmap.de/evaluation_tool/'
         # url: web site of the tool
 
         # Translations
-        self.isTranslated = False
+        self.isTranslated = True
         # the translations for a tool are in tool directory/locale
 
         # # Custom variables:
