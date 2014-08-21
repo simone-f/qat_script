@@ -87,19 +87,19 @@ class OpeningHoursValidatorTool(Tool):
         self.toolInfo = {
             "opening_hours": [
                 [
-                    "filter_error",
+                    "error",
                     "filter_error",
                     "string used by create_url() to request errors from server",
                     "circle_err",
                     "circle_err",
                 ], [
-                    "filter_warnOnly",
+                    "warnOnly",
                     "filter_warnOnly",
                     "string used by create_url() to request errors from server",
                     "circle_red_warn",
                     "circle_red_warn",
                 ], [
-                    "filter_errorOnly",
+                    "errorOnly",
                     "filter_errorOnly",
                     "string used by create_url() to request errors from server",
                     "circle_err",
@@ -184,25 +184,25 @@ class OpeningHoursValidatorTool(Tool):
                 lon = float(element['lon'])
             osmId = "%s%d" % (element['type'][:1], element['id'])
             bbox = parseTask.build_bbox(lat, lon)
-            errorID = ''
 
             oh_value = element['tags'][check_osm_key]
             user_error_message = None
-            # try:
-            #     oh = pyopening_hours.OpeningHours(oh_value)
-            # except pyopening_hours.ParseException:
-            #     # print(error.message)
-            #     # print(self._return_tuple_for_element(element))
-            #     interesting_elements['errorOnly'].append(self._return_tuple_for_element(element))
-            #     continue
-            # if oh.getWarnings():
-            #     # for line in oh.getWarnings():
-            #         # print('  ' + line)
-            #     # print(self._return_tuple_for_element(element))
-            #     interesting_elements['warnOnly'].append(self._return_tuple_for_element(element))
-            user_error_message = "%s\n\nValue could not be parsed, reason:\n%s" % (oh_value, "error")
 
-            if 'error' in parseTask.errors:
+            errorID = 'error'
+            logging.debug("Parsing value: %s", oh_value)
+            try:
+                oh = pyopening_hours.OpeningHours(oh_value)
+                errorID = 'OK'
+            except pyopening_hours.ParseException:
+                errorID = 'errorOnly'
+
+            # if errorID == 'OK':
+                # if oh.getWarnings():
+                    # errorID = 'warnOnly'
+            # else:
+                # user_error_message = "%s\n\nValue could not be parsed, reason:\n%s" % (oh_value, "error")
+
+            if errorID in parseTask.errors or (errorID == 'error' and (parseTask.errors == 'warnOnly' or parseTask.errors == 'errorOnly')):
                 parseTask.errors['error'].append(
                     (
                         osmId,
@@ -219,7 +219,4 @@ class OpeningHoursValidatorTool(Tool):
                     )
                 )
 
-            # if 'error' in checks:
-            # if 'errorOnly' in checks:
-            # if 'warnOnly' in checks:
         return True
