@@ -15,9 +15,6 @@ from java.lang import Thread
 from java.io import File
 from ...tool import Tool
 
-import pyopening_hours
-# ImportError: No module named pyopening_hours
-
 # tool   : opening_hours_validator
 # author : Robin `ypid` Schneider
 # webpage: http://openingh.openstreetmap.de/evaluation_tool/
@@ -30,8 +27,11 @@ logging.basicConfig(
 
 class OpeningHoursValidatorTool(Tool):
 
-    OVERPASS_API_URL = 'http://overpass-api.de/api/interpreter'
-    OVERPASS_API_TIMEOUT = 60
+    # OPENING_HOURS_SERVER_URL = 'http://localhost:8080/api/oh_interpreter'
+    OPENING_HOURS_SERVER_URL = 'http://openingh.openstreetmap.de:12355/api/oh_interpreter'
+
+    # OPENING_HOURS_SERVER_TIMEOUT = 60
+    # set server side.
 
     def __init__(self, app):
         self.app = app
@@ -88,19 +88,19 @@ class OpeningHoursValidatorTool(Tool):
             "opening_hours": [
                 [
                     "error",
-                    "filter_error",
+                    "error",
                     "string used by create_url() to request errors from server",
                     "circle_err",
                     "circle_err",
                 ], [
                     "warnOnly",
-                    "filter_warnOnly",
+                    "warnOnly",
                     "string used by create_url() to request errors from server",
                     "circle_red_warn",
                     "circle_red_warn",
                 ], [
                     "errorOnly",
-                    "filter_errorOnly",
+                    "errorOnly",
                     "string used by create_url() to request errors from server",
                     "circle_err",
                     "circle_err",
@@ -122,14 +122,14 @@ class OpeningHoursValidatorTool(Tool):
 
         check_osm_key = 'opening_hours'
 
-        overpass_query_url = self.OVERPASS_API_URL \
-            + '?&data=' \
-            + urllib2.quote("[out:json][timeout:%d][bbox:%f,%f,%f,%f];" % (
-                self.OVERPASS_API_TIMEOUT,
+        # http://localhost:8080/api/oh_interpreter?tag=opening_hours&s=51.249&w=7.149&n=51.251&e=7.151&filter=errorOnly
+        logging.debug("Downloading data for checks %s.", checks)
+        ohs_query_url = self.OPENING_HOURS_SERVER_URL \
+            + '?&tag=%s' % urllib2.quote(check_osm_key) \
+            + '&s=%s&w=%s&n=%s&e=%s' % (
                 zoneBbox[1], zoneBbox[0],
-                zoneBbox[3], zoneBbox[2]
-            ) + "(node['%s'];way['%s'];);out body center;" % (check_osm_key, check_osm_key))
-        return [{"checks": checks, "url": overpass_query_url}]
+                zoneBbox[3], zoneBbox[2])
+        return [{"checks": checks, "url": ohs_query_url}]
 
     # MANDATORY. Return "" if there isn't any web page
     def error_url(self, error):
@@ -157,6 +157,7 @@ class OpeningHoursValidatorTool(Tool):
         """
 
         check_osm_key = 'opening_hours'
+        logging.debug("parse_error_file for tag %s", check_osm_key)
 
         print parseTask
         logging.debug("parseTask.errors: %s", parseTask.errors)
@@ -166,9 +167,10 @@ class OpeningHoursValidatorTool(Tool):
             sys.path.append(jysonModule)
         from com.xhaus.jyson import JysonCodec as json
         overpass_json_object = json.loads(parseTask.app.errorsData)
+        print overpass_json_object
         for element in overpass_json_object['elements']:
             if check_osm_key not in element['tags']:
-                logging.error('Overpass API returned element which did not contain queried tag.')
+                logging.error('opening_hours_server.js returned element which did not contain queried tag.')
                 continue
 
             if 'name' in element['tags']:
@@ -186,30 +188,36 @@ class OpeningHoursValidatorTool(Tool):
             bbox = parseTask.build_bbox(lat, lon)
 
             oh_value = element['tags'][check_osm_key]
-            user_error_message = None
+            user_message = None
 
-            errorID = 'error'
-            logging.debug("Parsing value: %s", oh_value)
-            try:
-                oh = pyopening_hours.OpeningHours(oh_value)
-                errorID = 'OK'
-            except pyopening_hours.ParseException:
+            errorID = None
+            if element['tag_problems'][check_osm_key]['error']:
+                logging.debug("Value error")
                 errorID = 'errorOnly'
+                user_message = "%s\n\n: Value (%s) could not be parsed, reason:\n%s" % (
+                    "Error",
+                    oh_value,
+                    '\n'.join(element['tag_problems'][check_osm_key]['eval_notes'])
+                    )
+            elif element['tag_problems'][check_osm_key]['eval_notes']:
+                logging.debug("Value warning")
+                errorID = 'warnOnly'
+                user_message = "%s\n\nThe following warning%s occurred for value (%s):\n%s" % (
+                    "Warning",
+                    's' if len(element['tag_problems'][check_osm_key]['eval_notes']) > 1 else '',
+                    oh_value,
+                    '\n'.join(element['tag_problems'][check_osm_key]['eval_notes'])
+                    )
 
-            # if errorID == 'OK':
-                # if oh.getWarnings():
-                    # errorID = 'warnOnly'
-            # else:
-                # user_error_message = "%s\n\nValue could not be parsed, reason:\n%s" % (oh_value, "error")
-
-            if errorID in parseTask.errors or (errorID == 'error' and (parseTask.errors == 'warnOnly' or parseTask.errors == 'errorOnly')):
+            if errorID in parseTask.errors or ('error' in parseTask.errors and (errorID == 'warnOnly' or errorID == 'errorOnly')):
+                logging.debug('Appending')
                 parseTask.errors['error'].append(
                     (
                         osmId,
                         (lat, lon),
                         bbox,
                         errorID,
-                        user_error_message,
+                        user_message,
                         {
                             'lat': lat,
                             'lon': lon,

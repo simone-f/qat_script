@@ -71,7 +71,7 @@ fs.readFile(translation_source_file, 'utf8', function (err, data) {
             if (typeof translations_for_lang.texts.filter === 'object') {
                 for (var key in translations_for_lang.texts.filter) {
                     var value = translations_for_lang.texts.filter[key];
-                    out_string += getLocaleLineForItem('c_filter_' + key, value);
+                    out_string += getLocaleLineForItem('c_' + key, value);
                 }
             } else {
                 continue; /* Do not write file if something is missing. */
