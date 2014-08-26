@@ -28,7 +28,7 @@ logging.basicConfig(
 class OpeningHoursValidatorTool(Tool):
 
     # OPENING_HOURS_SERVER_URL = 'http://localhost:8080/api/oh_interpreter'
-    OPENING_HOURS_SERVER_URL = 'http://openingh.openstreetmap.de:12355/api/oh_interpreter'
+    OPENING_HOURS_SERVER_URL = 'http://openingh.openstreetmap.de/api/oh_interpreter'
 
     # OPENING_HOURS_SERVER_TIMEOUT = 60
     # set server side.
