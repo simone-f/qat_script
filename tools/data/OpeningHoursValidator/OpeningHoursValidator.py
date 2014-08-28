@@ -194,37 +194,31 @@ class OpeningHoursValidatorTool(Tool):
             if element['tag_problems'][check_osm_key]['error']:
                 logging.debug("Value error")
                 errorID = 'errorOnly'
-                user_message = "%s\n\n: Value (%s) could not be parsed, reason:\n%s" % (
+                user_message = "%s: Value (%s) could not be parsed, reason:<br>%s" % (
                     "Error",
                     oh_value,
-                    '\n'.join(element['tag_problems'][check_osm_key]['eval_notes'])
+                    '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
                     )
             elif element['tag_problems'][check_osm_key]['eval_notes']:
                 logging.debug("Value warning")
                 errorID = 'warnOnly'
-                user_message = "%s\n\nThe following warning%s occurred for value (%s):\n%s" % (
+                user_message = "%s: The following warning%s occurred for value (%s):<br>%s" % (
                     "Warning",
                     's' if len(element['tag_problems'][check_osm_key]['eval_notes']) > 1 else '',
                     oh_value,
-                    '\n'.join(element['tag_problems'][check_osm_key]['eval_notes'])
+                    '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
                     )
 
-            if errorID in parseTask.errors or ('error' in parseTask.errors and (errorID == 'warnOnly' or errorID == 'errorOnly')):
-                logging.debug('Appending')
-                parseTask.errors['error'].append(
-                    (
-                        osmId,
-                        (lat, lon),
-                        bbox,
-                        errorID,
-                        user_message,
-                        {
-                            'lat': lat,
-                            'lon': lon,
-                            'oh_value': oh_value,
-                            'oh_mode': self.oh_mode,
-                        },
-                    )
-                )
+            logging.debug('Appending')
+            errorData = (osmId, (lat, lon), bbox, errorID, user_message, {
+                'lat': lat,
+                'lon': lon,
+                'oh_value': oh_value,
+                'oh_mode': self.oh_mode
+            })
+            if 'error' in parseTask.errors:
+                parseTask.errors['error'].append(errorData)
+            if errorID in parseTask.errors:
+                parseTask.errors[errorID].append(errorData)
 
         return True
