@@ -7,9 +7,7 @@ See http://wiki.openstreetmap.org/wiki/Key:opening_hours:specification for the s
 """
 
 import sys
-import urllib
-import urllib2
-import logging
+#import logging
 
 from java.lang import Thread
 from java.io import File
@@ -19,11 +17,11 @@ from ...tool import Tool
 # author : Robin `ypid` Schneider
 # webpage: http://openingh.openstreetmap.de/evaluation_tool/
 
-logging.basicConfig(
-    format='%(levelname)s (OpeningHoursValidatorTool): %(message)s',
-    level=logging.DEBUG,
-    # level=logging.INFO,
-)
+#logging.basicConfig(
+#    format='%(levelname)s (OpeningHoursValidatorTool): %(message)s',
+#    level=logging.DEBUG,
+#    # level=logging.INFO,
+#)
 
 class OpeningHoursValidatorTool(Tool):
 
@@ -208,11 +206,11 @@ class OpeningHoursValidatorTool(Tool):
                 tagsAndChecks[tag] = []
             tagsAndChecks[tag].append(check)
         for tag, checksList in tagsAndChecks.iteritems():
-            ohs_query_url = self.OPENING_HOURS_SERVER_URL \
-                + '?&tag=%s' % urllib2.quote(tag) \
-                + '&s=%s&w=%s&n=%s&e=%s' % (
-                    zoneBbox[1], zoneBbox[0],
-                    zoneBbox[3], zoneBbox[2])
+            ohs_query_url = self.OPENING_HOURS_SERVER_URL
+            ohs_query_url += '?&tag=%s' % tag
+            ohs_query_url += '&s=%s&w=%s&n=%s&e=%s' % (
+                zoneBbox[1], zoneBbox[0],
+                zoneBbox[3], zoneBbox[2])
             requests.append({"checks": checksList,
                              "url": ohs_query_url})
         return requests
@@ -221,6 +219,7 @@ class OpeningHoursValidatorTool(Tool):
     def error_url(self, error):
         """Create a url to view an error in the web browser.
         """
+        from java.net import URL, URLEncoder
         # Custom variables:
         # https://github.com/ypid/opening_hours.js#library-api
         if error.check.url in ("opening_hours", "lit", "smoking_hours"):
@@ -229,7 +228,7 @@ class OpeningHoursValidatorTool(Tool):
             oh_mode = 2
         return '%s?EXP=%s&lat=%f&lon=%f&mode=%d' % (
             self.uri,
-            urllib.quote(error.other['oh_value']),
+            URLEncoder.encode(error.other['oh_value'], "UTF-8").replace("+", "%20"),
             error.coords(0),
             error.coords(1),
             oh_mode
@@ -248,9 +247,9 @@ class OpeningHoursValidatorTool(Tool):
         """Extract errors from JSON file. Implementation based on OsmoseTool.
         """
         check_osm_key = parseTask.checks[0].url
-        logging.debug("parse_error_file for tag %s", check_osm_key)
-        logging.debug("parseTask.errors: %s", parseTask.errors)
-        logging.debug("parseTask.tool: %s", parseTask.tool)
+        #logging.debug("parse_error_file for tag %s", check_osm_key)
+        #logging.debug("parseTask.errors: %s", parseTask.errors)
+        #logging.debug("parseTask.tool: %s", parseTask.tool)
         jysonModule = File.separator.join([parseTask.app.SCRIPTDIR,
                                            "tools",
                                            "jyson.jar"])
@@ -261,11 +260,11 @@ class OpeningHoursValidatorTool(Tool):
 
         for element in overpass_json_object['elements']:
             if check_osm_key not in element['tags']:
-                logging.error('opening_hours_server.js returned element which did not contain queried tag.')
+                #logging.error('opening_hours_server.js returned element which did not contain queried tag.')
                 continue
 
-            if 'name' in element['tags']:
-                logging.debug("Tag name: %s", element['tags']['name'])
+            #if 'name' in element['tags']:
+            #    logging.debug("Tag name: %s", element['tags']['name'])
             oh_value = element['tags'][check_osm_key]
             lat = None
             lon = None
@@ -284,7 +283,7 @@ class OpeningHoursValidatorTool(Tool):
             errorID = None
             errorType = None
             if element['tag_problems'][check_osm_key]['error']:
-                logging.debug("Value error")
+                #logging.debug("Value error")
                 errorType = 'errorOnly'
                 user_message = "%s: Value (%s) could not be parsed, reason:<br>%s" % (
                     "Error",
@@ -292,7 +291,7 @@ class OpeningHoursValidatorTool(Tool):
                     '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
                     )
             elif element['tag_problems'][check_osm_key]['eval_notes']:
-                logging.debug("Value warning")
+                #logging.debug("Value warning")
                 errorType = 'warnOnly'
                 user_message = "%s: The following warning%s occurred for value (%s):<br>%s" % (
                     "Warning",
@@ -301,7 +300,7 @@ class OpeningHoursValidatorTool(Tool):
                     '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
                     )
 
-            logging.debug('Appending')
+            #logging.debug('Appending')
             errorData = (osmId, (lat, lon), bbox, errorID, user_message,
                          {'oh_value': oh_value})
             for check_name in (check_osm_key + '_error',
