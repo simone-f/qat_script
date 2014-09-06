@@ -10,7 +10,7 @@ Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStree
 
 [Video on how to use it](http://bit.ly/ZTwj0Z) (webm, 16.8MB)
 
-### Features:
+## Features:
 
 * **Errors download** of currently observed area in JOSM, from different error detectors. The type of error can be selected from a menu or a toggle dialog, in the second case, multiple kinds of error can be downloaded at once.
 * **Progressive correction** of downloaded errors by clicking on a button (next, next, next...).
@@ -21,7 +21,7 @@ Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStree
 * A list of **favourites checks** can be created by selecting different checks belonging to different tools and find them again quickly.
 * A **local GPX file** can be opened. Its waypoints will be used as positions that the user can visits in sequence to check for errors (more info on the [Wiki](http://wiki.openstreetmap.org/wiki/Quality_Assurance_Tools_script)).
 
-### Supported QA Tools:
+## Supported QA Tools:
 
 * [OSM Inspector](http://tools.geofabrik.de/osmi/) by GEOFABRIK (only some types of errors)
 * [KeepRight](http://keepright.ipax.at/) by Harald Kleiner
@@ -49,7 +49,7 @@ Credits:
 * JOSM OpenStreetBugs Plugin
 * Translators: Poppei82 (German), operon (French)
 
-To add a new QA tool read the file tools/README.md.
+To add a new QA tool read the file [tools/README.md](tools/README.md).
 
 Note: I wrote a Python script, that can be run in JOSM thanks to [JOSM Scripting plugin](http://gubaer.github.io/josm-scripting-plugin/), rathar than a regular JOSM plugin because I just know Python. I would be happy if someone could create a Java plugin with these features.
 
