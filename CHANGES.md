@@ -1,3 +1,10 @@
+development
+===========
+Supported tools v0.2beta1
+-------------------------
+
+* New tool: [**Opening Hours Validator**](http://openingh.openstreetmap.de/), by Robin Schneider
+
 v0.6
 ====
 New features:
