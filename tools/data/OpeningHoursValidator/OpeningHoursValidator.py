@@ -47,11 +47,6 @@ class OpeningHoursValidatorTool(Tool):
         self.isTranslated = True
         # the translations for a tool are in tool directory/locale
 
-        # # Custom variables:
-
-        # Current mode of opening_hours.js: https://github.com/ypid/opening_hours.js#library-api
-        self.oh_mode = 0
-
         # Additional preferences for this tool
         self.prefsGui = None
         # There are additional preferences for this tool. See Osmose for example
@@ -88,28 +83,112 @@ class OpeningHoursValidatorTool(Tool):
             "opening_hours": [
                 [
                     "error",
-                    "error",
-                    "string used by create_url() to request errors from server",
+                    "opening_hours_error",
+                    "opening_hours",
                     "circle_err",
                     "circle_err",
                 ], [
                     "warnOnly",
-                    "warnOnly",
-                    "string used by create_url() to request errors from server",
+                    "opening_hours_warnOnly",
+                    "opening_hours",
                     "circle_red_warn",
                     "circle_red_warn",
                 ], [
                     "errorOnly",
-                    "errorOnly",
-                    "string used by create_url() to request errors from server",
+                    "opening_hours_errorOnly",
+                    "opening_hours",
                     "circle_err",
                     "circle_err",
                 ],
             ],
+
+            "collection_times": [
+                [
+                    "error",
+                    "collection_times_error",
+                    "collection_times",
+                    "circle_err",
+                    "circle_err",
+                ], [
+                    "warnOnly",
+                    "collection_times_warnOnly",
+                    "collection_times",
+                    "circle_red_warn",
+                    "circle_red_warn",
+                ], [
+                    "errorOnly",
+                    "collection_times_errorOnly",
+                    "collection_times",
+                    "circle_err",
+                    "circle_err",
+                ],
+            ],
+            "lit": [
+                [
+                    "error",
+                    "lit_error",
+                    "lit",
+                    "circle_err",
+                    "circle_err",
+                ], [
+                    "warnOnly",
+                    "lit_warnOnly",
+                    "lit",
+                    "circle_red_warn",
+                    "circle_red_warn",
+                ], [
+                    "errorOnly",
+                    "lit_errorOnly",
+                    "lit",
+                    "circle_err",
+                    "circle_err",
+                ],
+            ],
+            "smoking_hours": [
+                [
+                    "error",
+                    "smoking_hours_error",
+                    "smoking_hours",
+                    "circle_err",
+                    "circle_err",
+                ], [
+                    "warnOnly",
+                    "smoking_hours_warnOnly",
+                    "smoking_hours",
+                    "circle_red_warn",
+                    "circle_red_warn",
+                ], [
+                    "errorOnly",
+                    "smoking_hours_errorOnly",
+                    "smoking_hours",
+                    "circle_err",
+                    "circle_err",
+                ],
+            ],
+            "service_times": [
+                [
+                    "error",
+                    "service_times_error",
+                    "service_times",
+                    "circle_err",
+                    "circle_err",
+                ], [
+                    "warnOnly",
+                    "service_times_warnOnly",
+                    "service_times",
+                    "circle_red_warn",
+                    "circle_red_warn",
+                ], [
+                    "errorOnly",
+                    "service_times_errorOnly",
+                    "service_times",
+                    "circle_err",
+                    "circle_err",
+                ],
+            ]
+
         }
         Tool.__init__(self, app)
-
-        # if there is not an icon for a check in 'tool directory/icons/checks/check name' a red dot is used.
 
     # MANDATORY
     def download_urls(self, (zoneBbox, checks)):
@@ -119,28 +198,41 @@ class OpeningHoursValidatorTool(Tool):
            If the errors from all the checks can be downloaded with just
            one url, a list with one dictionary must be returned.
         """
-
-        check_osm_key = 'opening_hours'
-
+        requests = []
+        tagsAndChecks = {}
         # http://localhost:8080/api/oh_interpreter?tag=opening_hours&s=51.249&w=7.149&n=51.251&e=7.151&filter=errorOnly
-        logging.debug("Downloading data for checks %s.", checks)
-        ohs_query_url = self.OPENING_HOURS_SERVER_URL \
-            + '?&tag=%s' % urllib2.quote(check_osm_key) \
-            + '&s=%s&w=%s&n=%s&e=%s' % (
-                zoneBbox[1], zoneBbox[0],
-                zoneBbox[3], zoneBbox[2])
-        return [{"checks": checks, "url": ohs_query_url}]
+        # Divide requests by tag
+        for check in checks:
+            tag = check.url
+            if tag not in tagsAndChecks:
+                tagsAndChecks[tag] = []
+            tagsAndChecks[tag].append(check)
+        for tag, checksList in tagsAndChecks.iteritems():
+            ohs_query_url = self.OPENING_HOURS_SERVER_URL \
+                + '?&tag=%s' % urllib2.quote(tag) \
+                + '&s=%s&w=%s&n=%s&e=%s' % (
+                    zoneBbox[1], zoneBbox[0],
+                    zoneBbox[3], zoneBbox[2])
+            requests.append({"checks": checksList,
+                             "url": ohs_query_url})
+        return requests
 
     # MANDATORY. Return "" if there isn't any web page
     def error_url(self, error):
         """Create a url to view an error in the web browser.
         """
+        # Custom variables:
+        # https://github.com/ypid/opening_hours.js#library-api
+        if error.check.url in ("opening_hours", "lit", "smoking_hours"):
+            oh_mode = 0
+        elif error.check.url in ("collection_times", "service_times"):
+            oh_mode = 2
         return '%s?EXP=%s&lat=%f&lon=%f&mode=%d' % (
             self.uri,
             urllib.quote(error.other['oh_value']),
-            error.other['lat'],
-            error.other['lon'],
-            error.other['oh_mode'],
+            error.coords(0),
+            error.coords(1),
+            oh_mode
         )
 
     # MANDATORY. Return "" if there isn't any web page
@@ -155,19 +247,18 @@ class OpeningHoursValidatorTool(Tool):
     def parse_error_file(self, parseTask):
         """Extract errors from JSON file. Implementation based on OsmoseTool.
         """
-
-        check_osm_key = 'opening_hours'
+        check_osm_key = parseTask.checks[0].url
         logging.debug("parse_error_file for tag %s", check_osm_key)
-
-        print parseTask
         logging.debug("parseTask.errors: %s", parseTask.errors)
         logging.debug("parseTask.tool: %s", parseTask.tool)
-        jysonModule = File.separator.join([parseTask.app.SCRIPTDIR, "tools", "jyson.jar"])
+        jysonModule = File.separator.join([parseTask.app.SCRIPTDIR,
+                                           "tools",
+                                           "jyson.jar"])
         if jysonModule not in sys.path:
             sys.path.append(jysonModule)
         from com.xhaus.jyson import JysonCodec as json
         overpass_json_object = json.loads(parseTask.app.errorsData)
-        print overpass_json_object
+
         for element in overpass_json_object['elements']:
             if check_osm_key not in element['tags']:
                 logging.error('opening_hours_server.js returned element which did not contain queried tag.')
@@ -191,9 +282,10 @@ class OpeningHoursValidatorTool(Tool):
             user_message = None
 
             errorID = None
+            errorType = None
             if element['tag_problems'][check_osm_key]['error']:
                 logging.debug("Value error")
-                errorID = 'errorOnly'
+                errorType = 'errorOnly'
                 user_message = "%s: Value (%s) could not be parsed, reason:<br>%s" % (
                     "Error",
                     oh_value,
@@ -201,7 +293,7 @@ class OpeningHoursValidatorTool(Tool):
                     )
             elif element['tag_problems'][check_osm_key]['eval_notes']:
                 logging.debug("Value warning")
-                errorID = 'warnOnly'
+                errorType = 'warnOnly'
                 user_message = "%s: The following warning%s occurred for value (%s):<br>%s" % (
                     "Warning",
                     's' if len(element['tag_problems'][check_osm_key]['eval_notes']) > 1 else '',
@@ -210,15 +302,11 @@ class OpeningHoursValidatorTool(Tool):
                     )
 
             logging.debug('Appending')
-            errorData = (osmId, (lat, lon), bbox, errorID, user_message, {
-                'lat': lat,
-                'lon': lon,
-                'oh_value': oh_value,
-                'oh_mode': self.oh_mode
-            })
-            if 'error' in parseTask.errors:
-                parseTask.errors['error'].append(errorData)
-            if errorID in parseTask.errors:
-                parseTask.errors[errorID].append(errorData)
+            errorData = (osmId, (lat, lon), bbox, errorID, user_message,
+                         {'oh_value': oh_value})
+            for check_name in (check_osm_key + '_error',
+                               check_osm_key + "_" + errorType):
+                if check_name in parseTask.errors:
+                    parseTask.errors[check_name].append(errorData)
 
         return True
