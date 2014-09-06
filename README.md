@@ -8,7 +8,7 @@ Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStree
 
 ![qat_script dialog in JOSM, errors fixing](http://dl.dropboxusercontent.com/u/41550819/OSM/qat_script/wiki_img/qat_script_dialog_fixing_small.png "qat_script dialog in JOSM, errors fixing")
 
-[Video on how to use it](http://bit.ly/ZTwj0Z) (webm, 16.8MB)
+[Video on how to use it](http://bit.ly/ZTwj0Z) (webm, 35.3MB)
 
 ## Features:
 
@@ -27,7 +27,8 @@ Quality Assurance Tools script (qat_script) is a script for JOSM (Java OpenStree
 * [KeepRight](http://keepright.ipax.at/) by Harald Kleiner
 * [Osmose](http://osmose.openstreetmap.fr/)
 * [Errori in OSM Italia Grp](https://dl.dropboxusercontent.com/u/41550819/OSM/Errori_in_Italia_Grp)
-* [housenumbervalidator](http://gulp21.bplaced.net/osm/housenumbervalidator/)
+* [housenumbervalidator](http://gulp21.bplaced.net/osm/housenumbervalidator/) by Gulp21
+* [Opening Hours Validator](http://openingh.openstreetmap.de/) by Robin Schneider
 
 Installation and how to
 -----------------------
@@ -39,23 +40,12 @@ Author: Simone F. <groppo8@gmail.com>
 
 License: GPLv2
 
-Credits:
-
-* [Gubaer](http://gubaer.github.com/), JOSM Scripting Plugin and help
-* Harald Kleiner, KeepRight
-* GEOFABRIK, OSM Inspector
-* Authors of Osmose
-* Gulp21, author of housenumbervalidator
-* JOSM OpenStreetBugs Plugin
-* Translators: Poppei82 (German), operon (French)
-
 To add a new QA tool read the file [tools/README.md](tools/README.md).
 
 Note: I wrote a Python script, that can be run in JOSM thanks to [JOSM Scripting plugin](http://gubaer.github.io/josm-scripting-plugin/), rathar than a regular JOSM plugin because I just know Python. I would be happy if someone could create a Java plugin with these features.
 
-### Contributors
-Several mappers contributed by testing, reporting bugs or suggesting new features: mcheck, Poppei82, operon, Хмурый ...
-Their names are in CONTRIBUTORS and CHANGES files.
+### Credits and contributors
+Thanks to QA tools' authors and to the mappers who contributed by testing, reporting bugs or suggesting new features (mcheck, Poppei82, operon...)<br>Their names are in CONTRIBUTORS and CHANGES files.
 
 ### Attributions
 * KeepRight, Geofabrik and Osmose logos have been drawn in Inkscape and are based on the official logos.
