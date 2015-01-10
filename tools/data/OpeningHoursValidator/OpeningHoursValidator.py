@@ -80,7 +80,7 @@ class OpeningHoursValidatorTool(Tool):
         self.toolInfo = {
             "opening_hours": [
                 [
-                    "error",
+                    "error",        # errors and warnings
                     "opening_hours_error",
                     "opening_hours",
                     "circle_err",
@@ -102,7 +102,7 @@ class OpeningHoursValidatorTool(Tool):
 
             "collection_times": [
                 [
-                    "error",
+                    "error",        # errors and warnings
                     "collection_times_error",
                     "collection_times",
                     "circle_err",
@@ -123,7 +123,7 @@ class OpeningHoursValidatorTool(Tool):
             ],
             "lit": [
                 [
-                    "error",
+                    "error",        # errors and warnings
                     "lit_error",
                     "lit",
                     "circle_err",
@@ -144,7 +144,7 @@ class OpeningHoursValidatorTool(Tool):
             ],
             "smoking_hours": [
                 [
-                    "error",
+                    "error",        # errors and warnings
                     "smoking_hours_error",
                     "smoking_hours",
                     "circle_err",
@@ -165,7 +165,7 @@ class OpeningHoursValidatorTool(Tool):
             ],
             "service_times": [
                 [
-                    "error",
+                    "error",        # errors and warnings
                     "service_times_error",
                     "service_times",
                     "circle_err",
@@ -196,9 +196,11 @@ class OpeningHoursValidatorTool(Tool):
            If the errors from all the checks can be downloaded with just
            one url, a list with one dictionary must be returned.
         """
+        # https://github.com/ypid/opening_hours_server.js/blob/master/ohs.js
+        # E.g.
+        # http://localhost:8080/api/oh_interpreter?tag=opening_hours&s=51.249&w=7.149&n=51.251&e=7.151&filter=errorOnly
         requests = []
         tagsAndChecks = {}
-        # http://localhost:8080/api/oh_interpreter?tag=opening_hours&s=51.249&w=7.149&n=51.251&e=7.151&filter=errorOnly
         # Divide requests by tag
         for check in checks:
             tag = check.url
@@ -211,6 +213,7 @@ class OpeningHoursValidatorTool(Tool):
             ohs_query_url += '&s=%s&w=%s&n=%s&e=%s' % (
                 zoneBbox[1], zoneBbox[0],
                 zoneBbox[3], zoneBbox[2])
+            ohs_query_url += '&filter=%s' % check.name.split("_")[-1]
             requests.append({"checks": checksList,
                              "url": ohs_query_url})
         return requests
@@ -229,8 +232,8 @@ class OpeningHoursValidatorTool(Tool):
         return '%s?EXP=%s&lat=%f&lon=%f&mode=%d' % (
             self.uri,
             URLEncoder.encode(error.other['oh_value'], "UTF-8").replace("+", "%20"),
-            error.coords(0),
-            error.coords(1),
+            error.coords[0],
+            error.coords[1],
             oh_mode
         )
 
@@ -246,6 +249,10 @@ class OpeningHoursValidatorTool(Tool):
     def parse_error_file(self, parseTask):
         """Extract errors from JSON file. Implementation based on OsmoseTool.
         """
+        # Errors reported from:
+        # https://github.com/ypid/opening_hours_server.js/blob/master/ohs.js
+        # check_osm_key = opening_hours || collection_times || lit
+        #                 || smoking_hours || service_times
         check_osm_key = parseTask.checks[0].url
         #logging.debug("parse_error_file for tag %s", check_osm_key)
         #logging.debug("parseTask.errors: %s", parseTask.errors)
@@ -260,7 +267,8 @@ class OpeningHoursValidatorTool(Tool):
 
         for element in overpass_json_object['elements']:
             if check_osm_key not in element['tags']:
-                #logging.error('opening_hours_server.js returned element which did not contain queried tag.')
+                # logging.error('opening_hours_server.js returned \
+                # element which did not contain queried tag.')
                 continue
 
             #if 'name' in element['tags']:
@@ -277,28 +285,34 @@ class OpeningHoursValidatorTool(Tool):
             osmId = "%s%d" % (element['type'][:1], element['id'])
             bbox = parseTask.build_bbox(lat, lon)
 
-            oh_value = element['tags'][check_osm_key]
-            user_message = None
-
             errorID = None
-            errorType = None
+            errorType = ""
             if element['tag_problems'][check_osm_key]['error']:
                 #logging.debug("Value error")
                 errorType = 'errorOnly'
-                user_message = "%s: Value (%s) could not be parsed, reason:<br>%s" % (
-                    "Error",
-                    oh_value,
-                    '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
-                    )
-            elif element['tag_problems'][check_osm_key]['eval_notes']:
+            else:
                 #logging.debug("Value warning")
                 errorType = 'warnOnly'
-                user_message = "%s: The following warning%s occurred for value (%s):<br>%s" % (
-                    "Warning",
-                    's' if len(element['tag_problems'][check_osm_key]['eval_notes']) > 1 else '',
-                    oh_value,
-                    '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
-                    )
+
+            user_message = ""
+            if element['tag_problems'][check_osm_key]['eval_notes'] \
+            and element['tag_problems'][check_osm_key]['eval_notes'] != [{}]:
+                if errorType == 'errorOnly':
+                    user_message = "Error: Value (%s) could not be parsed, reason:<br>%s" % (
+                        oh_value,
+                        "<br>".join(element['tag_problems'][check_osm_key]['eval_notes'])
+                        )
+                else:
+                    user_message = "Warning: The following warning%s occurred for value (%s):<br>%s" % (
+                        's' if len(element['tag_problems'][check_osm_key]['eval_notes']) > 1 else '',
+                        oh_value,
+                        '<br>'.join(element['tag_problems'][check_osm_key]['eval_notes'])
+                        )
+
+            # print "check_osm_key: ", element['tag_problems'][check_osm_key]
+            # print "osm id: ", osmId
+            # print "errorType: ", errorType
+            # print "user_message:", user_message
 
             #logging.debug('Appending')
             errorData = (osmId, (lat, lon), bbox, errorID, user_message,
