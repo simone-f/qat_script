@@ -37,8 +37,8 @@ Fixes and cleanup:
 
 * GUIs for downloading errors and fixing them in sequence are separated in two tabs, to give more space to checks table and error description.
 * (Reported by Poppei82) "The configuration dialogue isn't visible in the window panel". Preferences are now displayed on a JFrame.
-* (Reported by Хмурый) Some boundaries with spaces in names cannot be downoloaded from overpass to use them as favourite zone.
-* (Reported by Хмурый, fixed by Akks) Encoding problems on errors descriptions.
+* (Reported by Xmypblu) Some boundaries with spaces in names cannot be downoloaded from overpass to use them as favourite zone.
+* (Reported by Xmypblu, fixed by Akks) Encoding problems on errors descriptions.
 * Default JOSM icons are used for buttons where it's possible (OK,  Cancel, Refresh...) and Java File.separator is used instead of Python os.path.join.
 * FalsePositiveDialog width is fixed.
 * New logo.
