@@ -1,5 +1,7 @@
 development
 ===========
+* Russian translation, thanks to [Edward17](http://wiki.openstreetmap.org/wiki/User:Edward17) and [Xmypblu](http://wiki.openstreetmap.org/wiki/User:Xmypblu).
+
 Supported tools v0.2beta1
 -------------------------
 
