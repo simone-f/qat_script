@@ -1,11 +1,11 @@
-development
-===========
+v0.6.2
+======
 * Russian translation, thanks to [Edward17](http://wiki.openstreetmap.org/wiki/User:Edward17) and [Xmypblu](http://wiki.openstreetmap.org/wiki/User:Xmypblu).
+* Fix: always use the term "Favourite zone" instead of favourite zone and area, to avoid confusion (reported by Edward17).
 
-Supported tools v0.2beta1
--------------------------
+Supported tools (v0.2):
 
-* New tool: [**Opening Hours Validator**](http://openingh.openstreetmap.de/), by Robin Schneider
+* New tool: [**Opening Hours Validator**](http://openingh.openstreetmap.de/), by [Robin Schneider](http://wiki.openstreetmap.org/wiki/User:Ypid).
 
 v0.6
 ====
